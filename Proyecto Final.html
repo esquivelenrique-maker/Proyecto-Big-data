@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proyecto Teachable Machine</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+    <style>
+        body { font-family: Arial; text-align: center; margin-top: 40px; }
+        #webcam-container { margin-top: 20px; }
+        #label-container { margin-top: 10px; font-size: 20px; }
+    </style>
+</head>
+
+<body>
+    <h1>Proyecto Teachable Machine</h1>
+
+    <button id="startButton" onclick="init()">Iniciar modelo</button>
+    <p id="status"></p>
+
+    <div id="webcam-container"></div>
+    <div id="label-container"></div>
+
+    <script>
+        // Modelo de Teachable Machine integrado
+        const URL = "https://teachablemachine.withgoogle.com/models/cD2AWghSyd/";
+
+        let model, webcam, labelContainer, maxPredictions;
+
+        async function init() {
+            try {
+                document.getElementById("startButton").disabled = true;
+                document.getElementById("status").innerText = "Cargando modelo...";
+
+                const modelURL = URL + "model.json";
+                const metadataURL = URL + "metadata.json";
+
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+
+                const flip = true;
+                webcam = new tmImage.Webcam(300, 300, flip);
+
+                await webcam.setup();
+                await webcam.play();
+                window.requestAnimationFrame(loop);
+
+                document.getElementById("webcam-container").appendChild(webcam.canvas);
+
+                labelContainer = document.getElementById("label-container");
+                labelContainer.innerHTML = "";
+
+                for (let i = 0; i < maxPredictions; i++) {
+                    labelContainer.appendChild(document.createElement("div"));
+                }
+
+                document.getElementById("status").innerText = "Modelo cargado ✔";
+            } 
+            catch (error) {
+                document.getElementById("status").innerText =
+                    "Error: No se pudo acceder a la cámara o cargar el modelo.";
+                console.error(error);
+            }
+        }
+
+        async function loop() {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+            for (let i = 0; i < maxPredictions; i++) {
+                labelContainer.childNodes[i].innerHTML =
+                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            }
+        }
+    </script>
+</body>
+</html>
