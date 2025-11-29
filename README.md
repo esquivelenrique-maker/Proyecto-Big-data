@@ -26,3 +26,5 @@ Para usar este clasificador en tu navegador, solo necesitas seguir unos sencillo
 * **Fondo:** Utiliza un **fondo oscuro o neutro** para que la cámara pueda enfocar y aislar la herramienta sin confusión.
 * **Iluminación:** Asegúrate de tener una **buena y uniforme iluminación** sobre la herramienta para evitar sombras que puedan confundir el modelo.
 * **Presentación:** Sostén la herramienta claramente frente a la cámara.
+
+* https://youtu.be/n3HgqLI3Vk4
